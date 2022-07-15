@@ -45,6 +45,7 @@ type VerifyRequest struct {
 type VerifyResponse struct {
 	IsTwitterVerified         bool   `json:"is_twitter_verified"`
 	TwitterVerificationString string `json:"twitter_hash"`
+	Tweet                     string `json:"tweet"`
 }
 
 func Verify(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +119,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 			verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
 			db.Create(&verification)
 		}
+		resp.Tweet = fmt.Sprintf("Verifying my account for gotrekt.xyz (by @HookProtocol) ... %s", resp.TwitterVerificationString)
 		json.NewEncoder(w).Encode(&resp)
 	}
 }
