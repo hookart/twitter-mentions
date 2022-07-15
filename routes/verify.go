@@ -7,9 +7,12 @@ import (
 	"encoding/pem"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang-jwt/jwt"
 	"github.com/hookart/twitter-mentions/models"
 	"github.com/spf13/viper"
@@ -105,11 +108,16 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(&resp)
 	} else {
-		resp.TwitterVerificationString = "blah"
-		verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
-		db.Create(&verification)
+		verification := &models.Verification{}
+		err := db.First(&verification, models.Verification{AccountID: account.ID})
+		if err == nil {
+			resp.TwitterVerificationString = verification.VerificationString
+		} else {
+			newAddr := common.BytesToAddress(crypto.Keccak256([]byte(fmt.Sprintf("hookprotocol - %s - %d", address, rand.Float64())))[12:])
+			resp.TwitterVerificationString = newAddr.Hex()
+			verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
+			db.Create(&verification)
+		}
 		json.NewEncoder(w).Encode(&resp)
 	}
-
-	return
 }
