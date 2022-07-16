@@ -39,15 +39,18 @@ func Listen() {
 	var re = regexp.MustCompile(`(?m)(0x[A-Za-z0-9]{40})`)
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
+		log.Println("tweet incomming!! ", tweet.ID, tweet.User.Name, tweet.User.IDStr, tweet.User.ScreenName)
 		for _, match := range re.FindAllString(tweet.Text, -1) {
+			log.Println("tweet matched!! ", tweet.ID, tweet.User.Name, tweet.User.IDStr, tweet.User.ScreenName)
 			validation := models.Verification{}
 			err := db.Find(&validation, &models.Verification{VerificationString: match})
 			if err == nil {
 				account := models.Account{}
 				db.Find(&account, "id = ?", validation.AccountID)
 
-				account.TwitterHandle = tweet.User.IDStr
+				account.TwitterHandle = tweet.User.ScreenName
 				account.Verified = true
+				log.Println("tweet updated!! ", account.ID)
 				db.Save(&account)
 				db.Delete(&validation)
 			}
