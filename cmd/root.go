@@ -29,9 +29,11 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&port, "port", 8081, "port to listen on")
 	rootCmd.PersistentFlags().StringVar(&key, "key", "key.pem", "path to jwt private key file")
 	rootCmd.PersistentFlags().String("postgres", "postgresql://twitter:abcde@127.0.0.1:5432/tweets", "postgres connection string")
+
 	viper.BindPFlag("port", rootCmd.PersistentFlags().Lookup("port"))
 	viper.BindPFlag("key", rootCmd.PersistentFlags().Lookup("key"))
 	viper.BindPFlag("postgres", rootCmd.PersistentFlags().Lookup("postgres"))
+
 	rootCmd.AddCommand(serveCmd)
 	rootCmd.AddCommand(migrateCmd)
 }

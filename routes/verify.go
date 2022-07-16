@@ -46,6 +46,7 @@ type VerifyResponse struct {
 	IsTwitterVerified         bool   `json:"is_twitter_verified"`
 	TwitterVerificationString string `json:"twitter_hash"`
 	Tweet                     string `json:"tweet"`
+	Twitter                   string `json:"twitter"`
 }
 
 func Verify(w http.ResponseWriter, r *http.Request) {
@@ -74,12 +75,14 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return jwtPubKey, nil
 	})
+
 	if err != nil {
 		log.Println("An error occurred parsing the jwt ", err)
 		w.WriteHeader(500)
 		w.Write([]byte("JWT parse error"))
 		return
 	}
+
 	if !token.Valid {
 		log.Println("An error occured parsing the jwt ", err)
 		w.WriteHeader(401)
@@ -106,6 +109,8 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 
 	if account.Verified {
 		resp.IsTwitterVerified = true
+		// ok to share because they have authed with the JWT
+		resp.Twitter = account.TwitterHandle
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(&resp)
 	} else {
@@ -114,7 +119,10 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			resp.TwitterVerificationString = verification.VerificationString
 		} else {
-			newAddr := common.BytesToAddress(crypto.Keccak256([]byte(fmt.Sprintf("hookprotocol - %s - %d", address, rand.Float64())))[12:])
+			newAddr := common.BytesToAddress(
+				crypto.Keccak256([]byte(fmt.Sprintf("hook protocol - %s - %f",
+					address,
+					rand.Float64())))[12:])
 			resp.TwitterVerificationString = newAddr.Hex()
 			verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
 			db.Create(&verification)
