@@ -14,6 +14,7 @@ require (
 	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
 	github.com/dghubble/go-twitter v0.0.0-20220715160843-6597ae20b9f3 // indirect
 	github.com/ethereum/go-ethereum v1.10.20 // indirect
+	github.com/fallenstedt/twitter-stream v0.4.2 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect

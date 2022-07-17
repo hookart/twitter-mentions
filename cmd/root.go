@@ -36,6 +36,7 @@ func init() {
 
 	rootCmd.AddCommand(serveCmd)
 	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(rulesCmd)
 }
 
 func initConfig() {
