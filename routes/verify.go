@@ -115,14 +115,15 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&resp)
 	} else {
 		verification := &models.Verification{}
-		err := db.First(&verification, models.Verification{AccountID: account.ID})
+		err := db.First(&verification, models.Verification{AccountID: account.ID}).Error
 		if err == nil {
 			resp.TwitterVerificationString = verification.VerificationString
 		} else {
+			log.Println("err", err.Error())
 			newAddr := common.BytesToAddress(
-				crypto.Keccak256([]byte(fmt.Sprintf("hook protocol - %s - %f",
+				crypto.Keccak256([]byte(fmt.Sprintf("hook protocol - %s - %d",
 					address,
-					rand.Float64())))[12:])
+					rand.Int63())))[12:])
 			resp.TwitterVerificationString = newAddr.Hex()
 			verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
 			db.Create(&verification)
