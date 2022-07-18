@@ -128,7 +128,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 			verification := &models.Verification{AccountID: account.ID, VerificationString: resp.TwitterVerificationString}
 			db.Create(&verification)
 		}
-		resp.Tweet = fmt.Sprintf("Verifying my account for gotrekt.xyz (by @HookProtocol) ... %s", resp.TwitterVerificationString)
+		resp.Tweet = fmt.Sprintf("Proving I own my account for got rekt ? (made by @HookProtocol) 🪝🪝🪝🪝 %s", resp.TwitterVerificationString)
 		json.NewEncoder(w).Encode(&resp)
 	}
 }

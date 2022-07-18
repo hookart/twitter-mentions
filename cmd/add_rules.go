@@ -18,9 +18,10 @@ var rulesCmd = &cobra.Command{
 		}
 		api := twitterstream.NewTwitterStream(tok.AccessToken)
 		rules := twitterstream.NewRuleBuilder().
-			AddRule("@HookProtocol \"gotrekt.xyz\"", "mentions protocol and gotrekt.xyz").Build()
+			AddRule("@HookProtocol \"got rekt ?\"", "mentions protocol and got rekt ?").Build()
 
 		res, err := api.Rules.Create(rules, false)
+		// res, err := api.Rules.Delete(twitterstream.NewRuleDelete(1548717266669211648), false)
 		log.Println(res.Data)
 	},
 }
